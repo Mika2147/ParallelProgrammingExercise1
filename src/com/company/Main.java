@@ -6,8 +6,8 @@ public class Main {
         Supermarket supermarket = new Supermarket();
         for (int i = 0; i < Constants.CUSTOMER_COUNT; i++) {
             try {
-                CustomerRunnable runnable = new CustomerRunnable(supermarket);
-                Thread thread = new Thread(runnable);
+                Customer customer = new Customer(supermarket);
+                Thread thread = new Thread(customer);
                 thread.start();
                 Thread.sleep(Constants.NEW_CUSTOMER_ARRIVAL_INTERVAL);
             } catch (InterruptedException e) {

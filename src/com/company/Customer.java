@@ -4,7 +4,7 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
 
-public class Customer{
+public class Customer implements Runnable{
     private String id;
     private List<BasketOfBottles> baskets;
     private Supermarket supermarket;
@@ -40,5 +40,10 @@ public class Customer{
 
     public void finishReturning(BottleReturnMachine machine){
         supermarket.freeMachine(machine);
+    }
+
+    @Override
+    public void run() {
+        startReturning();
     }
 }
