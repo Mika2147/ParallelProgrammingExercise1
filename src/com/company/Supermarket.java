@@ -1,23 +1,39 @@
 package com.company;
 
-import java.util.ArrayList;
-import java.util.PriorityQueue;
-import java.util.Queue;
+import java.util.*;
 
 public class Supermarket {
-    private ArrayList<BottleReturnMachine> returnMachines;
-    private Queue<Customer> waitingCustomers;
+    private List<BottleReturnMachine> returnMachines;
+    private List<BottleReturnMachine> availableMachines;
 
-    public Supermarket(){
+    public Supermarket() {
         this.createReturnMachines();
-        this.waitingCustomers = new PriorityQueue<>(Constants.CUSTOMER_COUNT);
     }
 
-    private void createReturnMachines(){
+    private void createReturnMachines() {
         this.returnMachines = new ArrayList<>(Constants.RETURN_MACHINE_COUNT);
-        for (int i = 0; i < Constants.RETURN_MACHINE_COUNT; i++){
-            this.returnMachines.add(new BottleReturnMachine());
+        this.availableMachines = new ArrayList<>(Constants.RETURN_MACHINE_COUNT);
+        for (int i = 0; i < Constants.RETURN_MACHINE_COUNT; i++) {
+            var machine = new BottleReturnMachine();
+            this.returnMachines.add(machine);
+            this.availableMachines.add(machine);
         }
     }
 
+    public synchronized BottleReturnMachine useAvailableMachine() {
+        while (this.availableMachines.size() == 0) {
+            try {
+                wait();
+            } catch (InterruptedException e) {
+                e.printStackTrace();
+            }
+        }
+        return this.availableMachines.remove(0);
+
+    }
+
+    public synchronized void freeMachine(BottleReturnMachine machine) {
+        this.availableMachines.add(machine);
+        notify();
+    }
 }
