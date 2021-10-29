@@ -2,7 +2,6 @@ package com.company;
 
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Optional;
 
 public class Customer implements Runnable{
     private String id;
@@ -33,13 +32,22 @@ public class Customer implements Runnable{
         return this.baskets;
     }
 
-    public void startReturning(){
+    public synchronized void startReturning(){
         var machine = supermarket.useAvailableMachine();
-        machine.returnBaskets(this);
+        while(machine.isEmpty()){
+            try {
+                wait();
+                machine = supermarket.useAvailableMachine();
+            } catch (InterruptedException e) {
+                e.printStackTrace();
+            }
+        }
+        machine.get().returnBaskets(this);
     }
 
-    public void finishReturning(BottleReturnMachine machine){
+    public synchronized void finishReturning(BottleReturnMachine machine){
         supermarket.freeMachine(machine);
+        notify();
     }
 
     @Override
